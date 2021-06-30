@@ -6,17 +6,18 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 // Express middleware
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(express.json());
 
 // Connect to database
-const db = mysql.createConnection(
-  {
+const db = mysql.createConnection({
     host: 'localhost',
     // Your MySQL username,
     user: 'root',
     // Your MySQL password
-    password: '',
+    password: '8410Ble$$',
     database: 'election'
   },
   console.log('Connected to the election database.')
@@ -24,11 +25,17 @@ const db = mysql.createConnection(
 
 // Get all candidates
 app.get('/api/candidates', (req, res) => {
-  const sql = `SELECT * FROM candidates`;
-
+  const sql =
+    `SELECT candidates.*, parties.name 
+  AS party_name 
+  FROM candidates 
+  LEFT JOIN parties 
+  ON candidates.party_id = parties.id`;
   db.query(sql, (err, rows) => {
     if (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({
+        error: err.message
+      });
       return;
     }
     res.json({
@@ -40,12 +47,19 @@ app.get('/api/candidates', (req, res) => {
 
 // Get a single candidate
 app.get('/api/candidate/:id', (req, res) => {
-  const sql = `SELECT * FROM candidates WHERE id = ?`;
+  const sql =
+    `SELECT candidates.*, parties.name
+  AS party_name
+  FROM candidates
+  LEFT JOIN parties
+  WHERE id = ?`;
   const params = [req.params.id];
 
   db.query(sql, params, (err, row) => {
     if (err) {
-      res.status(400).json({ error: err.message });
+      res.status(400).json({
+        error: err.message
+      });
       return;
     }
     res.json({
@@ -62,7 +76,9 @@ app.delete('/api/candidate/:id', (req, res) => {
 
   db.query(sql, params, (err, result) => {
     if (err) {
-      res.statusMessage(400).json({ error: res.message });
+      res.statusMessage(400).json({
+        error: res.message
+      });
     } else if (!result.affectedRows) {
       res.json({
         message: 'Candidate not found'
@@ -78,7 +94,9 @@ app.delete('/api/candidate/:id', (req, res) => {
 });
 
 // Create a candidate
-app.post('/api/candidate', ({ body }, res) => {
+app.post('/api/candidate', ({
+  body
+}, res) => {
   const errors = inputCheck(
     body,
     'first_name',
@@ -86,7 +104,9 @@ app.post('/api/candidate', ({ body }, res) => {
     'industry_connected'
   );
   if (errors) {
-    res.status(400).json({ error: errors });
+    res.status(400).json({
+      error: errors
+    });
     return;
   }
 
@@ -96,7 +116,9 @@ app.post('/api/candidate', ({ body }, res) => {
 
   db.query(sql, params, (err, result) => {
     if (err) {
-      res.status(400).json({ error: err.message });
+      res.status(400).json({
+        error: err.message
+      });
       return;
     }
     res.json({
