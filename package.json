@@ -1,7 +1,7 @@
 {
-  "name": "U-Develop-It",
+  "name": "vote-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Back-end Api for voting app",
   "main": "index.js",
   "scripts": {
     "test": "jest",
